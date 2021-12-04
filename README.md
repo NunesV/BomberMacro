@@ -1,8 +1,8 @@
-Bot para bombercrypto
+# Bot para bombercrypto
 
 
 
-#O que ele faz:
+# O que ele faz:
 Funciona apenas para uma conta
 
 Farma sozinho e reage aos erros e captchas 
@@ -15,7 +15,7 @@ Tem random em tudo para evitar B@n
 
 Como usar:
 
-#Instalação:
+# Instalação:
 
 1)Baixe python
 
@@ -31,7 +31,7 @@ e criar um bot para vc no @botfather com comando /newbot, assim vc pega o token 
 
 
 
-#Tips:
+# Ajudae:
 Se esse projeto tá sendo lucrativo pra você, você pode contribuir:
 
 Metamask do Nunes(que fiz o fork) : 0xcc14e5a313F3C0E30D8Ed819f2CffED97F7A1412

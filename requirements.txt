@@ -1,3 +1,4 @@
+python-telegram-bot
 colorama
 pyautogui
 time

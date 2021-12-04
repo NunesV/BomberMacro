@@ -742,7 +742,7 @@ def check_map():
         for map in maps:
             map = pyautogui.locateOnScreen(map, confidence=0.5)
             if map != None:
-                pyautogui.moveTo(BotaoNewMap[0]-random.randrange(-12, 12),(BotaoNewMap[0]-random.randrange(-10, 10)))
+                pyautogui.moveTo(BotaoNewMap[0]-random.randrange(-5, 5),(BotaoNewMap[0]-random.randrange(-5, 5)))
                 time.sleep(0.8)
                 pyautogui.click()
                 time.sleep(1)
@@ -815,7 +815,7 @@ def connect():
                     print("Login nao realizado com sucesso, atualizando.")
 
                 if retries >= 10:
-                    telegram_bot_sendtext("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + "10 tentativas de login realizadas, verifique por que pode ter dado ruim! " )
+                    telegram_bot_sendtext("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + "\n 10 tentativas de login realizadas, verifique por que pode ter dado ruim! " )
                     pyautogui.hotkey('ctrl','shift', 'r')
                     retries = 0
                 else:
@@ -836,15 +836,15 @@ def show_stats():
         time.sleep(300)
         if CiclesDone > cliclesreported:
             cliclesreported = CiclesDone
-            print(Fore.BLUE + datetime.now().strftime("[%H:%M:%S]") + "- Quantidade de vezes que foram colocados para trabalhar: " + str(CiclesDone))
+            print(Fore.BLUE + ("\n") + datetime.now().strftime("[%H:%M:%S]") + "- Quantidade de vezes que foram colocados para trabalhar: " + str(CiclesDone))
             telegram_bot_sendtext("\U000023F3 "+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F477 Quantidade de vezes que foram colocados para trabalhar: " + str(CiclesDone))
         if MapsCleared > mapsreported:
             mapsreported = MapsCleared
-            print(Fore.BLUE + datetime.now().strftime("[%H:%M:%S]") + "- Mapas feitos: " + str(MapsCleared))
+            print(Fore.BLUE + ("\n") + datetime.now().strftime("[%H:%M:%S]") + "- Mapas feitos: " + str(MapsCleared))
             telegram_bot_sendtext("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F5FA Mapas explodidos: " + str(MapsCleared))
         if MapsCleared > mapsreported:
             mapsreported = MapsCleared
-            print(Fore.BLUE + datetime.now().strftime("[%H:%M:%S]") + "- Erros encontrados: " + str(ErrorsFound))
+            print(Fore.BLUE + ("\n") + datetime.now().strftime("[%H:%M:%S]") + "- Erros encontrados: " + str(ErrorsFound))
             telegram_bot_sendtext("\U00001F6D1"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F6A8 Erros encontrados: " + str(ErrorsFound))
         sendprint()
 

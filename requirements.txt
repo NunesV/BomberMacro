@@ -1,7 +1,7 @@
 python-telegram-bot
 colorama
 pyautogui
-time
+datetime
 threading
 configparser
 random

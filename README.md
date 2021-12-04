@@ -1,6 +1,7 @@
 # Bot para bombercrypto
 
-
+# O que falta:
+Melhorar o code e remover o que não estou usando, melhorando o como ele trabalha, sempre baseado no find de imagens e não sobre tempo.. 
 
 # O que ele faz:
 Funciona apenas para uma conta
@@ -28,7 +29,9 @@ e criar um bot para vc no @botfather com comando /newbot, assim vc pega o token 
 4)Execute com: python BotBombSINGLEACCOUNT.py, não se esqueça de configurar o settings.ini.
 
 
-
+# Esse projeto
+Esse projeto é uma juncao de dois bots que acompanhei, do henr1q e do mpcabete. 
+Fiz apenas uma copia, ainda estou terminando de reutilizar as funcoes do mpcabete e do henr1q para criar apenas 1 funcao para cada acao. 
 
 
 # Ajudae:

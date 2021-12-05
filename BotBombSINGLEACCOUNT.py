@@ -744,5 +744,5 @@ def botmenu():
         #sys.exit()
     else:
         print(Fore.RED + datetime.now().strftime("[%H:%M:%S]") + "Escolheu errado")
-time.sleep(3)
-solveCapcha()
+time.sleep(0.1)
+botmenu()

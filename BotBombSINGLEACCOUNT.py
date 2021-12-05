@@ -19,21 +19,13 @@ import yaml
 
 if __name__ == '__main__':
 
-    stream = open("config.yaml", 'r')
+    stream = open("naoalterarporenquanto.yaml", 'r')
     c = yaml.safe_load(stream)
 ct = c['threshold']
 
 pyautogui.PAUSE = c['time_intervals']['interval_between_moviments']
 
 pyautogui.FAILSAFE = True
-hero_clicks = 0
-login_attempts = 0
-last_log_is_progress = False
-
-
-
-
-
 
 
 go_work_img = cv2.imread('targets/go-work.png')
@@ -96,97 +88,7 @@ def logger(message, progress_indicator = False):
 
     return True
 
-def clickBtn(img,name=None, timeout=3, threshold = ct['default']):
-    logger(None, progress_indicator=True)
-    if not name is None:
-        pass
-        # print('waiting for "{}" button, timeout of {}s'.format(name, timeout))
-    start = time.time()
-    clicked = False
-    while(not clicked):
-        matches = positions(img, threshold=threshold)
-        if(len(matches)==0):
-            hast_timed_out = time.time()-start > timeout
-            if(hast_timed_out):
-                if not name is None:
-                    pass
-                    # print('timed out')
-                return False
-            # print('button not found yet')
-            continue
 
-        x,y,w,h = matches[0]
-        pyautogui.moveTo(x+w/2,y+h/2,1)
-        pyautogui.click()
-        return True
-
-def printSreen():
-    with mss.mss() as sct:
-        monitor = sct.monitors[0]
-        sct_img = np.array(sct.grab(monitor))
-        # The screen part to capture
-        # monitor = {"top": 160, "left": 160, "width": 1000, "height": 135}
-
-        # Grab the data
-        return sct_img[:,:,:3]
-
-def positions(target, threshold=ct['default']):
-    img = printSreen()
-    result = cv2.matchTemplate(img,target,cv2.TM_CCOEFF_NORMED)
-    w = target.shape[1]
-    h = target.shape[0]
-
-    yloc, xloc = np.where(result >= threshold)
-
-
-    rectangles = []
-    for (x, y) in zip(xloc, yloc):
-        rectangles.append([int(x), int(y), int(w), int(h)])
-        rectangles.append([int(x), int(y), int(w), int(h)])
-
-    rectangles, weights = cv2.groupRectangles(rectangles, 1, 0.2)
-    return rectangles
-
-def scroll():
-
-    commoms = positions(commom_img, threshold = ct['commom'])
-    if (len(commoms) == 0):
-        # print('no commom text found')
-        return
-    x,y,w,h = commoms[len(commoms)-1]
-    # print('moving to {},{} and scrolling'.format(x,y))
-#
-    pyautogui.moveTo(x,y,1)
-
-    if not c['use_click_and_drag_instead_of_scroll']:
-        pyautogui.scroll(-c['scroll_size'])
-    else:
-        pyautogui.dragRel(0,-c['click_and_drag_amount'],duration=1, button='left')
-
-
-def clickButtons():
-    buttons = positions(go_work_img, threshold=ct['go_to_work_btn'])
-    # print('buttons: {}'.format(len(buttons)))
-    for (x, y, w, h) in buttons:
-        pyautogui.moveTo(x+(w/2),y+(h/2),1)
-        pyautogui.click()
-        global hero_clicks
-        hero_clicks = hero_clicks + 1
-        #cv2.rectangle(sct_img, (x, y) , (x + w, y + h), (0,255,255),2)
-        if hero_clicks > 20:
-            logger('too many hero clicks, try to increase the go_to_work_btn threshold')
-            return
-    return len(buttons)
-
-def isWorking(bar, buttons):
-    y = bar[1]
-
-    for (_,button_y,_,button_h) in buttons:
-        isBelow = y < (button_y + button_h)
-        isAbove = y > (button_y - button_h)
-        if isBelow and isAbove:
-            return False
-    return True
 
 def clickGreenBarButtons():
     # ele clicka nos q tao trabaiano mas axo q n importa
@@ -238,62 +140,12 @@ def clickFullBarButtons():
 
     return len(not_working_full_bars)
 
-def goToHeroes():
-    if clickBtn(arrow_img):
-        global login_attempts
-        login_attempts = 0
-
-    # time.sleep(random.randrange(3, 8))
-    clickBtn(hero_img)
-    # time.sleep(random.randrange(3, 8))
-
-def goToGame():
-    # in case of server overload popup
-    clickBtn(x_button_img)
-    # time.sleep(random.randrange(3, 6))
-    clickBtn(x_button_img)
-
-    clickBtn(teasureHunt_icon_img)
 
 def refreshHeroesPositions():
     clickBtn(arrow_img)
     clickBtn(teasureHunt_icon_img)
     # time.sleep(random.randrange(3, 6))
     clickBtn(teasureHunt_icon_img)
-
-
-
-
-
-
-def refreshHeroes():
-    goToHeroes()
-
-    if c['select_heroes_mode'] == "full":
-        logger("Sending heroes with full stamina bar to work!")
-    elif c['select_heroes_mode'] == "green":
-        logger("Sending heroes with green stamina bar to work!")
-    else:
-        logger("Sending all heroes to work!")
-
-    buttonsClicked = 1
-    empty_scrolls_attempts = c['scroll_attemps']
-
-    while(empty_scrolls_attempts >0):
-        if c['select_heroes_mode'] == 'full':
-            buttonsClicked = clickFullBarButtons()
-        elif c['select_heroes_mode'] == 'green':
-            buttonsClicked = clickGreenBarButtons()
-        else:
-            buttonsClicked = clickButtons()
-
-        if buttonsClicked == 0:
-            empty_scrolls_attempts = empty_scrolls_attempts - 1
-        scroll()
-        time.sleep(random.randrange(2, 4))
-    logger('{} heroes sent to work so far'.format(hero_clicks))
-    goToGame()
-
 
 
 
@@ -480,7 +332,6 @@ config.read('settings.ini')
 MapsCleared = 0
 CiclesDone = 0
 ErrorsFound = 0
-UseMouse = True
 
 
 BotaoWork = eval(config.get('settings', 'BotaoWork'), {}, {})
@@ -515,19 +366,16 @@ Accounts = int(config['settings']['Accounts'])
 
 bot = telegram.Bot(token=tokent)
 
-def pprint(text):
-    print(datetime.now().strftime("[%H:%M:%S]") + str(text))
-
 
 # Put the heroes to work function
 def work():
     global CiclesDone
     print(datetime.now().strftime("[%H:%M:%S]") + '- Colocando a galera pra trampar...')
     time.sleep(random.randrange(3, 8))
-    pyautogui.moveTo(BotaoVoltar[0]-random.randrange(-12, 12),(BotaoVoltar[1]-random.randrange(-10, 10)))
+    pyautogui.moveTo(BotaoVoltar[0]-random.randrange(-7, 7),(BotaoVoltar[1]-random.randrange(-6, 6)))
     pyautogui.click()
     time.sleep(random.randrange(3, 8))
-    pyautogui.moveTo(BotaoHeroes[0]-random.randrange(-12, 12),(BotaoHeroes[1]-random.randrange(-10, 10)))
+    pyautogui.moveTo(BotaoHeroes[0]-random.randrange(-7, 7),(BotaoHeroes[1]-random.randrange(-6, 6)))
     pyautogui.click()
     time.sleep(random.randrange(10, 16))
     solveCapcha()
@@ -542,12 +390,12 @@ def work():
     time.sleep(random.randrange(2, 4))
 
     for _ in range(Heroes):
-        pyautogui.moveTo((BotaoWork[0]-random.randrange(-12, 12)),(BotaoWork[1]-random.randrange(-10, 10)))
+        pyautogui.moveTo((BotaoWork[0]-random.randrange(-7, 7)),(BotaoWork[1]-random.randrange(-6, 6)))
         pyautogui.click()
         time.sleep(random.randrange(2, 4))
 
     time.sleep(1)
-    pyautogui.moveTo(BotaoClose[0]-random.randrange(-12, 12),(BotaoClose[1]-random.randrange(-10, 10)))
+    pyautogui.moveTo(BotaoClose[0]-random.randrange(-7, 7),(BotaoClose[1]-random.randrange(-6, 6)))
     pyautogui.click()
     CiclesDone = CiclesDone + 1
 
@@ -559,28 +407,8 @@ def abrir_mapa():
     solveCapcha()
     print(datetime.now().strftime("[%H:%M:%S]") + "Opening map...")
     time.sleep(random.randrange(3, 6))
-    pyautogui.moveTo(BotaoMapa[0]-random.randrange(-12, 12),(BotaoMapa[1]-random.randrange(-10, 10)))
+    pyautogui.moveTo(BotaoMapa[0]-random.randrange(-7, 7),(BotaoMapa[1]-random.randrange(-6, 6)))
     pyautogui.click()
-
-
-
-# Open map multi acc
-def abrir_mapa2():
-    print(datetime.now().strftime("[%H:%M:%S]") + "Opening map...")
-    time.sleep(random.randrange(3, 6))
-    for i in range(1, Accounts + 1):
-        config = configparser.ConfigParser()
-        aux = (f'multi{str(i)}.ini')
-        config.read(aux)
-
-        global BotaoMapa
-
-        BotaoMapa = eval(config.get('settings', 'BotaoMapa'), {}, {})
-        pyautogui.moveTo(BotaoMapa[0]-random.randrange(-12, 12),(BotaoMapa[1]-random.randrange(-10, 10)))
-        pyautogui.click()
-        if stop_threads:
-            break
-
 
 #Single Account farm
 def bot():
@@ -596,13 +424,6 @@ def bot():
             break
 
 
-def telegram_bot_sendtext(bot_message):
-    global IdTelegram
-    bot_token = tokent
-    send_text = 'https://api.telegram.org/bot' + bot_token + '/sendMessage?chat_id=' + IdTelegram + '&parse_mode=Markdown&text=' + bot_message
-    response = requests.get(send_text)
-    return response.json()
-
 def sendprint():
     global IdTelegram
     global tokent
@@ -610,7 +431,7 @@ def sendprint():
     bauzin = glob.glob("Imgs/bauzi*.png")
     bauzin = pyautogui.locateCenterOnScreen(bauzin[0], confidence =0.5)
     if bauzin != None :
-        pyautogui.moveTo(Botaobau[0]-random.randrange(-12, 12),(Botaobau[1]-random.randrange(-10, 10)))
+        pyautogui.moveTo(Botaobau[0]-random.randrange(-7, 7),(Botaobau[1]-random.randrange(-6, 6)))
         time.sleep(random.randrange(2, 4))
         pyautogui.dragTo(button='left')
         time.sleep(random.randrange(2, 4))
@@ -618,7 +439,7 @@ def sendprint():
         print = print.save('Imgs/prints.png')
         print = glob.glob("Imgs/prints*.png")
         time.sleep(random.randrange(2, 4))
-        pyautogui.moveTo(Botaobauclose[0]-random.randrange(-12, 12),(Botaobauclose[1]-random.randrange(-10, 10)))
+        pyautogui.moveTo(Botaobauclose[0]-random.randrange(-7, 7),(Botaobauclose[1]-random.randrange(-6, 6)))
         time.sleep(random.randrange(2, 4))
         pyautogui.dragTo(button='left')
         time.sleep(random.randrange(2, 4))
@@ -629,48 +450,6 @@ def sendprint():
         pass
 
 
-
-
-
-
-
-# Multiacc loop farm
-def multiacc():
-    global Accounts
-    global CurrentConfig
-    while True:
-        for i in range(1, Accounts + 1):
-            config = configparser.ConfigParser()
-            aux = (f'multi{str(i)}.ini')
-            config.read(aux)
-
-            global BotaoWork
-            global BotaoClose
-            global BotaoMapa
-            global BotaoVoltar
-            global BotaoHeroes
-            global BotaoNewMap
-            global PosicaoScroll
-            global VelScroll
-            global Heroes
-            global NumScroll
-
-            BotaoWork = eval(config.get('settings', 'BotaoWork'), {}, {})
-            BotaoClose = eval(config.get('settings', 'BotaoClose'), {}, {})
-            BotaoMapa = eval(config.get('settings', 'BotaoMapa'), {}, {})
-            BotaoVoltar = eval(config.get('settings', 'BotaoVoltar'), {}, {})
-            BotaoHeroes = eval(config.get('settings', 'BotaoHeroes'), {}, {})
-            BotaoNewMap = eval(config.get('settings', 'BotaoNewMap'), {}, {})
-            PosicaoScroll = eval(config.get('settings', 'PosicaoScroll'), {}, {})
-            NumScroll = int(config['settings']['NumScroll'])
-            VelScroll = int(config['settings']['VelScroll'])
-            Heroes = int(config['settings']['Heroes'])
-
-            abrir_mapa()
-            work()
-            abrir_mapa()
-
-        tempo_farm()
 
 
 # Time to delay the work function
@@ -742,7 +521,7 @@ def check_map():
         for map in maps:
             map = pyautogui.locateOnScreen(map, confidence=0.5)
             if map != None:
-                pyautogui.moveTo(BotaoNewMap[0]-random.randrange(-12, 12),(BotaoNewMap[0]-random.randrange(-10, 10)))
+                pyautogui.moveTo(BotaoNewMap[0]-random.randrange(-5, 5),(BotaoNewMap[0]-random.randrange(-5, 5)))
                 time.sleep(0.8)
                 pyautogui.click()
                 time.sleep(1)
@@ -815,7 +594,7 @@ def connect():
                     print("Login nao realizado com sucesso, atualizando.")
 
                 if retries >= 10:
-                    telegram_bot_sendtext("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + "10 tentativas de login realizadas, verifique por que pode ter dado ruim! " )
+                    telegram_bot_sendtext("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + "\n 10 tentativas de login realizadas, verifique por que pode ter dado ruim! " )
                     pyautogui.hotkey('ctrl','shift', 'r')
                     retries = 0
                 else:
@@ -829,6 +608,7 @@ def connect():
 
 # Show farm stats
 def show_stats():
+    global bot
     mapsreported = 0
     cliclesreported = 0
     errorsreported = 0
@@ -836,16 +616,16 @@ def show_stats():
         time.sleep(300)
         if CiclesDone > cliclesreported:
             cliclesreported = CiclesDone
-            print(Fore.BLUE + datetime.now().strftime("[%H:%M:%S]") + "- Quantidade de vezes que foram colocados para trabalhar: " + str(CiclesDone))
-            telegram_bot_sendtext("\U000023F3 "+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F477 Quantidade de vezes que foram colocados para trabalhar: " + str(CiclesDone))
+            print(Fore.BLUE + ("\n") + datetime.now().strftime("[%H:%M:%S]") + "- Quantidade de vezes que foram colocados para trabalhar: " + str(CiclesDone))
+            bot.send_message(chat_id=IdTelegram, text=("\U000023F3 "+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F477 Quantidade de vezes que foram colocados para trabalhar: " + str(CiclesDone)))
         if MapsCleared > mapsreported:
             mapsreported = MapsCleared
-            print(Fore.BLUE + datetime.now().strftime("[%H:%M:%S]") + "- Mapas feitos: " + str(MapsCleared))
-            telegram_bot_sendtext("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F5FA Mapas explodidos: " + str(MapsCleared))
-        if MapsCleared > mapsreported:
-            mapsreported = MapsCleared
-            print(Fore.BLUE + datetime.now().strftime("[%H:%M:%S]") + "- Erros encontrados: " + str(ErrorsFound))
-            telegram_bot_sendtext("\U00001F6D1"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F6A8 Erros encontrados: " + str(ErrorsFound))
+            print(Fore.BLUE + ("\n") + datetime.now().strftime("[%H:%M:%S]") + "- Mapas feitos: " + str(MapsCleared))
+            bot.send_message(chat_id=IdTelegram, text=("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F5FA Mapas explodidos: " + str(MapsCleared)))
+        if ErrorsFound > errorsreported:
+            ErrorsFound = errorsreported
+            print(Fore.BLUE + ("\n") + datetime.now().strftime("[%H:%M:%S]") + "- Erros encontrados: " + str(ErrorsFound))
+            bot.send_message(chat_id=IdTelegram, text=("\U00001F6D1"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F6A8 Erros encontrados: " + str(ErrorsFound)))
         sendprint()
 
         time.sleep(DelayStats)
@@ -941,4 +721,5 @@ def botmenu():
         #sys.exit()
     else:
         print(Fore.RED + datetime.now().strftime("[%H:%M:%S]") + "Escolheu errado")
+
 botmenu()

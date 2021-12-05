@@ -42,6 +42,7 @@ Se esse projeto tá sendo lucrativo pra você, você pode contribuir:
 
 Metamask do Nunes(que fiz o fork) : 0xcc14e5a313F3C0E30D8Ed819f2CffED97F7A1412
 
+Eles que criaram a base que fizeram eu chegar e conseguir criar esse bot :
 
 Metamask do henr1q : 0x94843B902427006bedaC7fb24039500411D599Ac
 

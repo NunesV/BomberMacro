@@ -1,5 +1,8 @@
 # Bot para bombercrypto
 
+# LEIA E EVITE PERGUNTAS QUE JÁ ESTÃO EXPLICADAS NO README E NO CONFIG.INI, PELO AMOR DE DEUS ABRA O ARQUIVO E LEIA ! VLWW
+
+
 # O que falta:
 Melhorar o code e remover o que não estou usando, melhorando o como ele trabalha, sempre baseado no find de imagens e não sobre tempo.. 
 

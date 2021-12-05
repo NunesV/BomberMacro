@@ -6,6 +6,12 @@
 # O que falta:
 Melhorar o code e remover o que não estou usando, melhorando o como ele trabalha, sempre baseado no find de imagens e não sobre tempo.. 
 
+Criar o multiaccount de maneira simplista.
+
+Criar escuta para vc pedir print da tela e verificar se nao há erros no code..
+
+
+
 # O que ele faz:
 Funciona apenas para uma conta
 

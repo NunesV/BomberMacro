@@ -27,6 +27,53 @@ pyautogui.PAUSE = c['time_intervals']['interval_between_moviments']
 
 pyautogui.FAILSAFE = True
 
+pyautogui.FAILSAFE = False
+now = datetime.now()
+current_time = now.strftime("[%H:%M:%S]")
+
+
+colorama.init()
+config = configparser.ConfigParser()
+config.read('settings.ini')
+
+
+MapsCleared = 0
+CiclesDone = 0
+ErrorsFound = 0
+
+
+BotaoWork = eval(config.get('settings', 'BotaoWork'), {}, {})
+BotaoClose = eval(config.get('settings', 'BotaoClose'), {}, {})
+BotaoMapa = eval(config.get('settings', 'BotaoMapa'), {}, {})
+BotaoVoltar = eval(config.get('settings', 'BotaoVoltar'), {}, {})
+BotaoHeroes = eval(config.get('settings', 'BotaoHeroes'), {}, {})
+BotaoConnect = eval(config.get('settings', 'BotaoConnect'), {}, {})
+BotaoMeta = eval(config.get('settings', 'BotaoMeta'), {}, {})
+BotaoNewMap = eval(config.get('settings', 'BotaoNewMap'), {}, {})
+Botaobau = eval(config.get('settings', 'Botaobau'), {}, {})
+Botaobauclose = eval(config.get('settings', 'Botaobauclose'), {}, {})
+
+
+IdTelegram = str(config['settings']['IdTelegram'])
+tokent = str(config['settings']['tokenapitelegram'])
+
+PosicaoScroll = eval(config.get('settings', 'PosicaoScroll'), {}, {})
+NumScroll = int(config['settings']['NumScroll'])
+VelScroll = int(config['settings']['VelScroll'])
+
+DelayFarm = int(config['settings']['DelayFarm'])
+DelayStats = int(config['settings']['DelayStats'])
+Heroes = int(config['settings']['Heroes'])
+
+
+DelayToStart = int(config['settings']['DelayToStart'])
+AntiDetection = bool(config.getboolean('settings', 'AntiDetection'))
+AntiBot = int
+MultiAccount = bool(config.getboolean('settings', 'MultiAccount'))
+Accounts = int(config['settings']['Accounts'])
+
+bot = telegram.Bot(token=tokent)
+
 
 go_work_img = cv2.imread('targets/go-work.png')
 commom_img = cv2.imread('targets/commom-text.png')
@@ -342,53 +389,6 @@ def solveCapcha():
 
 
 
-pyautogui.FAILSAFE = False
-now = datetime.now()
-current_time = now.strftime("[%H:%M:%S]")
-
-
-colorama.init()
-config = configparser.ConfigParser()
-config.read('settings.ini')
-
-
-MapsCleared = 0
-CiclesDone = 0
-ErrorsFound = 0
-
-
-BotaoWork = eval(config.get('settings', 'BotaoWork'), {}, {})
-BotaoClose = eval(config.get('settings', 'BotaoClose'), {}, {})
-BotaoMapa = eval(config.get('settings', 'BotaoMapa'), {}, {})
-BotaoVoltar = eval(config.get('settings', 'BotaoVoltar'), {}, {})
-BotaoHeroes = eval(config.get('settings', 'BotaoHeroes'), {}, {})
-BotaoConnect = eval(config.get('settings', 'BotaoConnect'), {}, {})
-BotaoMeta = eval(config.get('settings', 'BotaoMeta'), {}, {})
-BotaoNewMap = eval(config.get('settings', 'BotaoNewMap'), {}, {})
-Botaobau = eval(config.get('settings', 'Botaobau'), {}, {})
-Botaobauclose = eval(config.get('settings', 'Botaobauclose'), {}, {})
-
-
-IdTelegram = str(config['settings']['IdTelegram'])
-tokent = str(config['settings']['tokenapitelegram'])
-
-PosicaoScroll = eval(config.get('settings', 'PosicaoScroll'), {}, {})
-NumScroll = int(config['settings']['NumScroll'])
-VelScroll = int(config['settings']['VelScroll'])
-
-DelayFarm = int(config['settings']['DelayFarm'])
-DelayStats = int(config['settings']['DelayStats'])
-Heroes = int(config['settings']['Heroes'])
-
-
-DelayToStart = int(config['settings']['DelayToStart'])
-AntiDetection = bool(config.getboolean('settings', 'AntiDetection'))
-AntiBot = int
-MultiAccount = bool(config.getboolean('settings', 'MultiAccount'))
-Accounts = int(config['settings']['Accounts'])
-
-bot = telegram.Bot(token=tokent)
-
 
 # Put the heroes to work function
 def work():
@@ -462,7 +462,7 @@ def sendprint():
         print = print.save('Imgs/prints.png')
         print = glob.glob("Imgs/prints*.png")
         time.sleep(random.randrange(2, 4))
-        pyautogui.moveTo(Botaobauclose[0]-random.randrange(-7, 7),(Botaobauclose[1]-random.randrange(-6, 6)))
+        pyautogui.moveTo(Botaobauclose[0]-random.randrange(-4, 4),(Botaobauclose[1]-random.randrange(-4, 4)))
         time.sleep(random.randrange(2, 4))
         pyautogui.dragTo(button='left')
         time.sleep(random.randrange(2, 4))
@@ -539,7 +539,7 @@ def check_errors():
 def check_map():
     global MapsCleared
     maps = glob.glob("NewMap/*.png")
-    time.sleep(random.randrange(3, 8))
+    time.sleep(random.randrange(3, 5))
     while True:
         for map in maps:
             map = pyautogui.locateOnScreen(map, confidence=0.5)
@@ -556,8 +556,9 @@ def check_map():
 
 # Connect from mainpage
 def connect():
+    
     retries = 0
-
+    bot = telegram.Bot(token=tokent)
     time.sleep(random.randrange(3, 8))
 
 
@@ -617,7 +618,7 @@ def connect():
                     print("Login nao realizado com sucesso, atualizando.")
 
                 if retries >= 10:
-                    telegram_bot_sendtext("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + "\n 10 tentativas de login realizadas, verifique por que pode ter dado ruim! " )
+                    bot.send_message(chat_id=IdTelegram, text=("\U000023F3"+ datetime.now().strftime("[%H:%M:%S]") + "\n 10 tentativas de login realizadas, verifique por que pode ter dado ruim! " ))
                     pyautogui.hotkey('ctrl','shift', 'r')
                     retries = 0
                 else:
@@ -631,7 +632,7 @@ def connect():
 
 # Show farm stats
 def show_stats():
-    global bot
+    bot = telegram.Bot(token=tokent)
     mapsreported = 0
     cliclesreported = 0
     errorsreported = 0
@@ -648,7 +649,7 @@ def show_stats():
         if ErrorsFound > errorsreported:
             ErrorsFound = errorsreported
             print(Fore.BLUE + ("\n") + datetime.now().strftime("[%H:%M:%S]") + "- Erros encontrados: " + str(ErrorsFound))
-            bot.send_message(chat_id=IdTelegram, text=("\U00001F6D1"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F6A8 Erros encontrados: " + str(ErrorsFound)))
+            bot.send_message(chat_id=IdTelegram, text=("\U0001F6A8"+ datetime.now().strftime("[%H:%M:%S]") + " \U0001F6A8 Erros encontrados: " + str(ErrorsFound)))
         sendprint()
 
         time.sleep(DelayStats)
@@ -745,4 +746,6 @@ def botmenu():
     else:
         print(Fore.RED + datetime.now().strftime("[%H:%M:%S]") + "Escolheu errado")
 time.sleep(0.1)
+
+
 botmenu()
